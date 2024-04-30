@@ -54,21 +54,22 @@ def set_token(pi_name):
     project_data['token'] = config[pi_name]
 
 
-def file_org(pi, export_type, file_ext, records):
+def file_org(pi, export_type, file_ext, records, output_dir):
     export_date = datetime.today().strftime('%Y-%m-%d')
     title = f"all_{pi}_studies"
     file_name = f"{export_date}_{title}_{export_type}.{file_ext}"
 
     if file_ext == "xml":
         soup = BeautifulSoup(records, "xml")
-        with open(file_name, "w", encoding="utf-8") as file:
+        with open(output_dir + file_name, "w", encoding="utf-8") as file:
             file.write(str(soup.prettify()))
     elif file_ext == "csv":
-        with open(file_name, "w") as file:
+        with open(output_dir + file_name, "w") as file:
             file.write(records)
 
 
 def main():
+    output_dir = "C:\\redcap_backups\\daily\\"
     pi, export_type = sys.argv[1:3]
     if pi not in ["cosgrove", "davis", "esterlis"] or export_type not in ["records", "project"]:
         print("Invalid arguments provided.")
@@ -94,7 +95,7 @@ def main():
         print(f"Error occurred: {e}")
         exit(1)
 
-    file_org(pi, export_type, file_ext, records)
+    file_org(pi, export_type, file_ext, records, output_dir)
 
 
 if __name__ == "__main__":
