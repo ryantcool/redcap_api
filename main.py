@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
+
+"""
+This script is used to query data from multiple redcap projects via api tokens
+and save the data as a form of backup.
+"""
+
 import sys
 import os
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
+
+__author__ = "Ryan Cool"
+__credits__ = ["Ryan Cool", "Marco Grasso"]
+__version__ = ""
+__maintainer__ = "Ryan Cool"
+__email__ = "ryan.cool@yale.edu"
+__status__ = "Dev"
+
 
 #########################
 #   Data for API Calls  #
@@ -45,13 +59,42 @@ project_data = {
 #############################
 
 
-def set_token(pi_name):
+def load_config():
     script_dir = os.path.dirname(__file__)
-    path_to_token = os.path.join(script_dir, 'tokens.json')
-    with open(path_to_token) as config_file:
+    path_to_config = os.path.join(script_dir, 'config.json')
+    with open(path_to_config) as config_file:
         config = json.load(config_file)
-    records_data['token'] = config[pi_name]
-    project_data['token'] = config[pi_name]
+    return path_to_config, config
+
+
+path_to_config, config = load_config()
+
+
+def set_token(pi_name):
+    api_key = config['tokens'][0][pi_name]
+    records_data['token'] = api_key
+    project_data['token'] = api_key
+
+
+def date_check():
+    date = config['date']
+    if not date:
+        date = datetime.today().strftime('%Y-%m-%d')
+        config['date'] = date
+    else:
+        pass
+    date_object = datetime.strptime(date, '%Y-%m-%d')
+    seven_days_ago = date_object + timedelta(days=7)
+    if seven_days_ago.date() == datetime.today().date():
+        print("The date is 7 days ago")
+        date = datetime.today().strftime('%Y-%m-%d')
+        config['date'] = date
+        with open(path_to_config, 'w') as config_file:
+            json.dump(config, config_file, indent=4, sort_keys=True)
+        return True
+    else:
+        print("The date is not 7 days ago")
+        return False
 
 
 def file_org(pi, export_type, file_ext, records, output_dir):
@@ -96,6 +139,9 @@ def main():
         exit(1)
 
     file_org(pi, export_type, file_ext, records, output_dir)
+
+    if date_check():
+        print("THIS SCAN IS OLD AS FUQQQQQQQ")
 
 
 if __name__ == "__main__":
