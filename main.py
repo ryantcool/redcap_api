@@ -60,9 +60,19 @@ project_data = {
 #############################
 
 
+def get_config_path():
+    if getattr(sys, "frozen", False):
+        # If this is running as a frozen executable
+        gcp = os.path.dirname(sys.executable)
+    else:
+        # If this is running as a python script i.e. ./main.py
+        gcp = os.path.dirname(os.path.abspath(__file__))
+
+    return os.path.join(gcp, "config.json")
+
+
 def load_config():
-    script_dir = os.path.dirname(__file__)
-    path_to_config = os.path.join(script_dir, "config.json")
+    path_to_config = get_config_path()
     with open(path_to_config) as config_file:
         config = json.load(config_file)
     return path_to_config, config
@@ -78,22 +88,23 @@ def set_token(pi_name: str):
 
 
 def date_check():
-    date = config["date"]
+    date = config["date-last-updated"]
+    days_passed = int(config["days"])
     if not date:
         date = datetime.today().strftime("%Y-%m-%d")
         config["date"] = date
     else:
         pass
     date_object = datetime.strptime(date, "%Y-%m-%d")
-    if (datetime.today() - date_object).days >= 7:
-        print("The date is/is over 7 days ago")
+    if (datetime.today() - date_object).days >= days_passed:
+        print(f"The date is/is over {days_passed} days ago")
         date = datetime.today().strftime("%Y-%m-%d")
         config["date"] = date
         with open(path_to_config, "w") as config_file:
             json.dump(config, config_file, indent=4, sort_keys=True)
         return True
     else:
-        print("The date is not 7 days ago")
+        print(f"The date is not {days_passed} days ago")
         return False
 
 
@@ -119,7 +130,15 @@ def main():
     # File Path for main PC
     # output_dir = "C:\\redcap_backups\\daily\\"
     # File Path for testing
-    output_dir = os.path.join(os.path.dirname(__file__), "redcap_output/daily")
+    # output_dir = os.path.join(os.path.dirname(__file__), "redcap_output/daily")
+    try:
+        output_dir = config["output_directory"]
+        if not os.path.isdir(output_dir):
+            print(f"ErrorL The directory {output_dir} does not exist")
+            sys.exit(1)
+    except KeyError:
+        print("Error: output_directory not found in config.json")
+        sys.exit(1)
     pi, export_type = sys.argv[1:3]
     if pi not in ["cosgrove", "davis", "esterlis"] or export_type not in [
         "records",
