@@ -89,14 +89,21 @@ def set_token(pi_name: str):
 
 def date_check():
     date = config["date-last-updated"]
-    days_passed = int(config["days"])
+    # Default to current date if not set in config
     if not date:
         date = datetime.today().strftime("%Y-%m-%d")
         config["date"] = date
     else:
         pass
+    days_passed = config["days"]
+    # Default to 7 days if not set in config
+    if not days_passed:
+        days_passed = 7
+        config["days"] = days_passed
+    else:
+        pass
     date_object = datetime.strptime(date, "%Y-%m-%d")
-    if (datetime.today() - date_object).days >= days_passed:
+    if (datetime.today() - date_object).days >= int(days_passed):
         print(f"The date is/is over {days_passed} days ago")
         date = datetime.today().strftime("%Y-%m-%d")
         config["date"] = date
