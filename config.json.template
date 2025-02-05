@@ -1,0 +1,10 @@
+{
+  "date-last-updated": "YYYY-mm-dd",
+  "days": number-of-days
+  "tokens": [
+    {
+      "pi-name": "api-token",
+    }
+  ],
+  "output_directory": "/file/path/to/output/directory"
+}
