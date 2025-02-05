@@ -129,7 +129,9 @@ def file_org(
         ) as file:
             file.write(str(soup.prettify()))
     elif file_ext == "csv":
-        with open(os.path.join(output_dir, file_name), "w") as file:
+        with open(
+            os.path.join(output_dir, file_name), "w", encoding="utf-8"
+        ) as file:
             file.write(records)
 
 
