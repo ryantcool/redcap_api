@@ -92,7 +92,7 @@ def date_check():
     # Default to current date if not set in config
     if not date:
         date = datetime.today().strftime("%Y-%m-%d")
-        config["date"] = date
+        config["date-last-updated"] = date
     else:
         pass
     days_passed = config["days"]
