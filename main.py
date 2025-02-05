@@ -106,7 +106,7 @@ def date_check():
     if (datetime.today() - date_object).days >= int(days_passed):
         print(f"The date is/is over {days_passed} days ago")
         date = datetime.today().strftime("%Y-%m-%d")
-        config["date"] = date
+        config["date-last-updated"] = date
         with open(path_to_config, "w") as config_file:
             json.dump(config, config_file, indent=4, sort_keys=True)
         return True
