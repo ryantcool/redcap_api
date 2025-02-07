@@ -136,14 +136,10 @@ def file_org(
 
 
 def main():
-    # File Path for main PC
-    # output_dir = "C:\\redcap_backups\\daily\\"
-    # File Path for testing
-    # output_dir = os.path.join(os.path.dirname(__file__), "redcap_output/daily")
     try:
         output_dir = config["output_directory"]
         if not os.path.isdir(output_dir):
-            print(f"ErrorL The directory {output_dir} does not exist")
+            print(f"Error: The directory {output_dir} does not exist")
             sys.exit(1)
     except KeyError:
         print("Error: output_directory not found in config.json")
