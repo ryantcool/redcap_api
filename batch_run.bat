@@ -1,7 +1,7 @@
 @echo off
-"C:\redcap_backups\src\redcap_api\env\Scripts\python.exe" "C:\redcap_backups\src\redcap_api\main.py" "cosgrove" "records"
-"C:\redcap_backups\src\redcap_api\env\Scripts\python.exe" "C:\redcap_backups\src\redcap_api\main.py" "cosgrove" "project"
-"C:\redcap_backups\src\redcap_api\env\Scripts\python.exe" "C:\redcap_backups\src\redcap_api\main.py" "davis" "records"
-"C:\redcap_backups\src\redcap_api\env\Scripts\python.exe" "C:\redcap_backups\src\redcap_api\main.py" "davis" "project"
-"C:\redcap_backups\src\redcap_api\env\Scripts\python.exe" "C:\redcap_backups\src\redcap_api\main.py" "esterlis" "records"
-"C:\redcap_backups\src\redcap_api\env\Scripts\python.exe" "C:\redcap_backups\src\redcap_api\main.py" "esterlis" "project"
+"C:\redcap_backups\src\redcap_backup.exe" "cosgrove" "records"
+"C:\redcap_backups\src\redcap_backup.exe" "cosgrove" "project"
+"C:\redcap_backups\src\redcap_backup.exe" "davis" "records"
+"C:\redcap_backups\src\redcap_backup.exe" "davis" "project"
+"C:\redcap_backups\src\redcap_backup.exe" "esterlis" "records"
+"C:\redcap_backups\src\redcap_backup.exe" "esterlis" "project"

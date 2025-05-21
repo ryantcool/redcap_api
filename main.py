@@ -104,14 +104,12 @@ def date_check():
         pass
     date_object = datetime.strptime(date, "%Y-%m-%d")
     if (datetime.today() - date_object).days >= int(days_passed):
-        print(f"The date is/is over {days_passed} days ago")
         date = datetime.today().strftime("%Y-%m-%d")
         config["date-last-updated"] = date
         with open(path_to_config, "w") as config_file:
             json.dump(config, config_file, indent=4, sort_keys=True)
         return True
     else:
-        print(f"The date is not {days_passed} days ago")
         return False
 
 
@@ -136,46 +134,47 @@ def file_org(
 
 
 def main():
-    try:
-        output_dir = config["output_directory"]
-        if not os.path.isdir(output_dir):
-            print(f"Error: The directory {output_dir} does not exist")
-            sys.exit(1)
-    except KeyError:
-        print("Error: output_directory not found in config.json")
-        sys.exit(1)
-    pi, export_type = sys.argv[1:3]
-    if pi not in ["cosgrove", "davis", "esterlis"] or export_type not in [
-        "records",
-        "project",
-    ]:
-        print("Invalid arguments provided.")
-        exit(1)
-
-    set_token(pi)
-
-    file_ext = "csv" if export_type == "records" else "xml"
-
-    if export_type == "records":
-        api_call = records_data
-    elif export_type == "project":
-        api_call = project_data
-    else:
-        print(f"{export_type} is not an acceptable value")
-        exit(1)
-
-    try:
-        r = requests.post("https://poa-redcap.med.yale.edu/api/", data=api_call)
-        print("HTTP Status: " + str(r.status_code))
-        records = r.text
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        exit(1)
-
-    file_org(pi, export_type, file_ext, records, output_dir)
-
     if date_check():
-        print("THIS SCAN IS OLD AS FUQQQQQQQ")
+        print(f"The date is/is over {config["days"]} days ago")
+        try:
+            output_dir = config["output_directory"]
+            if not os.path.isdir(output_dir):
+                print(f"Error: The directory {output_dir} does not exist")
+                sys.exit(1)
+        except KeyError:
+            print("Error: output_directory not found in config.json")
+            sys.exit(1)
+        pi, export_type = sys.argv[1:3]
+        if pi not in ["cosgrove", "davis", "esterlis"] or export_type not in [
+            "records",
+            "project",
+        ]:
+            print("Invalid arguments provided.")
+            exit(1)
+
+        set_token(pi)
+
+        file_ext = "csv" if export_type == "records" else "xml"
+
+        if export_type == "records":
+            api_call = records_data
+        elif export_type == "project":
+            api_call = project_data
+        else:
+            print(f"{export_type} is not an acceptable value")
+            exit(1)
+
+        try:
+            r = requests.post("https://poa-redcap.med.yale.edu/api/", data=api_call)
+            print("HTTP Status: " + str(r.status_code))
+            records = r.text
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            exit(1)
+
+        file_org(pi, export_type, file_ext, records, output_dir)
+    else:
+        print(f"{config["days"]} days have not passed you idiot.")
 
 
 if __name__ == "__main__":
