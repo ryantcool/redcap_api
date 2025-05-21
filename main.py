@@ -93,13 +93,19 @@ def date_check():
     if not date:
         date = datetime.today().strftime("%Y-%m-%d")
         config["date-last-updated"] = date
+        # Write default value to config.json
+        with open(path_to_config, "w") as config_file:
+            json.dump(config, config_file, indent=4, sort_keys=True)
     else:
         pass
     days_passed = config["days"]
     # Default to 7 days if not set in config
     if not days_passed:
-        days_passed = 7
+        days_passed = "7"
         config["days"] = days_passed
+        # Write default value to config.json
+        with open(path_to_config, "w") as config_file:
+            json.dump(config, config_file, indent=4, sort_keys=True)
     else:
         pass
     date_object = datetime.strptime(date, "%Y-%m-%d")
@@ -135,7 +141,7 @@ def file_org(
 
 def main():
     if date_check():
-        print(f"The date is/is over {config["days"]} days ago")
+        print(f"The date is/is over {config['days']} days ago")
         try:
             output_dir = config["output_directory"]
             if not os.path.isdir(output_dir):
@@ -165,7 +171,9 @@ def main():
             exit(1)
 
         try:
-            r = requests.post("https://poa-redcap.med.yale.edu/api/", data=api_call)
+            r = requests.post(
+                "https://poa-redcap.med.yale.edu/api/", data=api_call
+            )
             print("HTTP Status: " + str(r.status_code))
             records = r.text
         except Exception as e:
@@ -174,7 +182,7 @@ def main():
 
         file_org(pi, export_type, file_ext, records, output_dir)
     else:
-        print(f"{config["days"]} days have not passed you idiot.")
+        print(f"{config['days']} days have not passed you idiot.")
 
 
 if __name__ == "__main__":
