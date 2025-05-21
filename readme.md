@@ -6,7 +6,7 @@
 - Usage: `redcap_backup <pi-name> <records | project>`
 
 
-- [Config Template](https://codeberg.org/ryantcool/redcap_api/raw/branch/main/config.json.template) **
+- [Config Template](https://codeberg.org/ryantcool/redcap_api/raw/branch/main/config.json.template) <sup>[\[1\]](#note_1)</sup>
 
 
 ```
@@ -33,4 +33,6 @@
     - `api-token`: The api token associated with that pi's project
 - `output_directory`: The full file-path on the system to where you want the backup to be saved
 
-\** **Currently needs to be placed in same directory as script**
+### Notes
+<!----><a name="note_1"></a>
+1) Currently needs to be placed in same directory as script
