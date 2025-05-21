@@ -1,6 +1,6 @@
 {
   "date-last-updated": "YYYY-mm-dd",
-  "days": "number-of-days"
+  "days": "number-of-days",
   "tokens": [
     {
       "pi-name": "api-token",

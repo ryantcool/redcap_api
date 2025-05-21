@@ -1,6 +1,6 @@
 .env
 config.json
 redcap_output
-redcap_backup.spec
+*.spec
 dist
 build
