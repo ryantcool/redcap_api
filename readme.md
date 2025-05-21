@@ -12,7 +12,7 @@
 ```
 {
   "date-last-updated": "YYYY-mm-dd",
-  "days": "number-of-days"
+  "days": "number-of-days",
   "tokens": [
     {
       "pi-name": "api-token",
@@ -22,7 +22,7 @@
 }
 ```
 
-- `date-last-updated`: The date the script was last run. 
+- `date-last-updated`: The date the script was last run.
     - This gets updated in the config file every time you run the script and it's been n amount of days since the last run, where n is `days`
     - **IF THIS IS NOT SET IT WILL DEFAULT TO THE CURRENT DATE YOU'RE RUNNING THE SCRIPT**
 - `days`: The amount of days that need to pass for next backup. Defaults to 7 days if not specifically set
