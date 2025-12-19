@@ -1,0 +1,37 @@
+{
+    "date-last-updated": "YYYY-mm-dd",
+    "days": "number-of-days",
+    "output_directory": "/path/to/output/",
+    "redcap_url": "https://your-project/api/",
+    "export": {
+        "project": {
+            "content": "project_xml",
+            "exportDataAccessGroups": "true",
+            "exportFiles": "true",
+            "exportSurveyFields": "true",
+            "format": "xml",
+            "returnFormat": "xml",
+            "returnMetadataOnly": "false",
+            "token": ""
+        },
+        "records": {
+            "action": "export",
+            "content": "record",
+            "csvDelimiter": ",",
+            "exportCheckboxLabel": "false",
+            "exportDataAccessGroups": "false",
+            "exportSurveyFields": "false",
+            "format": "csv",
+            "rawOrLabel": "raw",
+            "rawOrLabelHeaders": "raw",
+            "returnFormat": "json",
+            "token": "",
+            "type": "flat"
+        }
+    },
+    "tokens": [
+        {
+            "pi": "SuPerSeCr3tT0k3N"
+        }
+    ]
+}
