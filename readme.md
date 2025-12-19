@@ -3,7 +3,7 @@
 
 ### Getting Started
 ---
-- Usage: `redcap_backup <pi-name> <records | project>`
+- Usage: `redcap_backup --pi <pi-name> --type <records | project>`
 
 
 - [Config Template](https://codeberg.org/ryantcool/redcap_api/raw/branch/main/config.json.template) <sup>[\[1\]](#note_1)</sup>
