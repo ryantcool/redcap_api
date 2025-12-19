@@ -1,7 +1,6 @@
-.env
+.venv
 config.json
-redcap_output
+temp
 *.spec
 dist
 build
-temp

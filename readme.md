@@ -6,19 +6,46 @@
 - Usage: `redcap_backup --pi <pi-name> --type <records | project>`
 
 
-- [Config Template](https://codeberg.org/ryantcool/redcap_api/raw/branch/main/config.json.template) <sup>[\[1\]](#note_1)</sup>
+- [Config Template](https://codeberg.org/ryantcool/redcap_api/src/branch/main/configs/config.json.template) <sup>[\[1\]](#note_1)</sup>
 
 
 ```
 {
-  "date-last-updated": "YYYY-mm-dd",
-  "days": "number-of-days",
-  "tokens": [
-    {
-      "pi-name": "api-token",
-    }
-  ],
-  "output_directory": "/file/path/to/output/directory"
+    "date-last-updated": "YYYY-mm-dd",
+    "days": "number-of-days",
+    "output_directory": "/path/to/output/",
+    "redcap_url": "https://your-project/api/",
+    "export": {
+        "project": {
+            "content": "project_xml",
+            "exportDataAccessGroups": "true",
+            "exportFiles": "true",
+            "exportSurveyFields": "true",
+            "format": "xml",
+            "returnFormat": "xml",
+            "returnMetadataOnly": "false",
+            "token": ""
+        },
+        "records": {
+            "action": "export",
+            "content": "record",
+            "csvDelimiter": ",",
+            "exportCheckboxLabel": "false",
+            "exportDataAccessGroups": "false",
+            "exportSurveyFields": "false",
+            "format": "csv",
+            "rawOrLabel": "raw",
+            "rawOrLabelHeaders": "raw",
+            "returnFormat": "json",
+            "token": "",
+            "type": "flat"
+        }
+    },
+    "tokens": [
+        {
+            "pi": "SuPerSeCr3tT0k3N"
+        }
+    ]
 }
 ```
 
