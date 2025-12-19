@@ -5,6 +5,7 @@ This script is used to query data from multiple redcap projects via api tokens
 and save the data as a form of backup.
 """
 
+import argparse
 import json
 import os
 import sys
@@ -21,43 +22,13 @@ __email__ = "ryan.cool@yale.edu"
 __status__ = "Dev"
 
 
-#########################
-#   Data for API Calls  #
-#########################
-
-# Exports all records
-
-records_data = {
-    "token": "",
-    "content": "record",
-    "action": "export",
-    "format": "csv",
-    "type": "flat",
-    "csvDelimiter": ",",
-    "rawOrLabel": "raw",
-    "rawOrLabelHeaders": "raw",
-    "exportCheckboxLabel": "false",
-    "exportSurveyFields": "false",
-    "exportDataAccessGroups": "false",
-    "returnFormat": "json",
-}
-
-# Exports entire project
-
-project_data = {
-    "token": "",
-    "content": "project_xml",
-    "format": "xml",
-    "returnMetadataOnly": "false",
-    "exportFiles": "true",
-    "exportSurveyFields": "true",
-    "exportDataAccessGroups": "true",
-    "returnFormat": "xml",
-}
-
-#############################
-#   End of API Call Data    #
-#############################
+def get_args(args: list[str] | None = None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--pi", "-p", help="set study pi")
+    parser.add_argument(
+        "--type", "-t", help="set type of export, i.e. records or project"
+    )
+    return parser.parse_args(args)
 
 
 def get_config_path():
@@ -81,31 +52,40 @@ def load_config():
 path_to_config, config = load_config()
 
 
-def set_token(pi_name: str):
-    api_key = config["tokens"][0][pi_name]
-    records_data["token"] = api_key
-    project_data["token"] = api_key
-
-
 def date_check():
     date = config["date-last-updated"]
+    days_passed = config["days"]
     # Default to current date if not set in config
     if not date:
         date = datetime.today().strftime("%Y-%m-%d")
         config["date-last-updated"] = date
+        if not days_passed:
+            days_passed = "7"
+            config["days"] = days_passed
+        else:
+            pass
         # Write default value to config.json
+        print(
+            f"date_last_updated and/or days not set in {path_to_config}.\nSetting to defaults and running..."
+        )
         with open(path_to_config, "w") as config_file:
             json.dump(config, config_file, indent=4, sort_keys=True)
+        return True
     else:
         pass
-    days_passed = config["days"]
     # Default to 7 days if not set in config
     if not days_passed:
         days_passed = "7"
+        date = datetime.today().strftime("%Y-%m-%d")
         config["days"] = days_passed
+        config["date-last-updated"] = date
+        print(
+            f"days not set in {path_to_config}.\nSetting to default (7) and running..."
+        )
         # Write default value to config.json
         with open(path_to_config, "w") as config_file:
             json.dump(config, config_file, indent=4, sort_keys=True)
+        return True
     else:
         pass
     date_object = datetime.strptime(date, "%Y-%m-%d")
@@ -114,75 +94,68 @@ def date_check():
         config["date-last-updated"] = date
         with open(path_to_config, "w") as config_file:
             json.dump(config, config_file, indent=4, sort_keys=True)
+        print("Backup scheduled successfully")
         return True
     else:
+        print(f"{days_passed} day(s) have not passed. Skipping backup.")
         return False
 
 
-def file_org(
-    pi: str, export_type: str, file_ext: str, records: str, output_dir: str
-):
+def file_org(pi: str, export_type: str, file_ext: str, records: str, output_dir: str):
     export_date = datetime.today().strftime("%Y-%m-%d")
     title = f"all_{pi}_studies"
     file_name = f"{export_date}_{title}_{export_type}.{file_ext}"
     output_dir = os.path.join(output_dir, "")
     if file_ext == "xml":
         soup = BeautifulSoup(records, "xml")
-        with open(
-            os.path.join(output_dir, file_name), "w", encoding="utf-8"
-        ) as file:
+        with open(os.path.join(output_dir, file_name), "w", encoding="utf-8") as file:
             file.write(str(soup.prettify()))
     elif file_ext == "csv":
-        with open(
-            os.path.join(output_dir, file_name), "w", encoding="utf-8"
-        ) as file:
+        with open(os.path.join(output_dir, file_name), "w", encoding="utf-8") as file:
             file.write(records)
 
 
 def main():
+    args = get_args()
+    if not args.pi or not args.type:
+        print("Please specify BOTH the study pi and export type")
+        sys.exit(1)
+
+    pi, export_type = args.pi, args.type
+    export_map = config["export"]
+    token_map = config["tokens"][0]
+    if not token_map.get(pi) or not export_map.get(export_type):
+        print("Invalid arguments provided.")
+        sys.exit(1)
     if date_check():
-        print(f"The date is/is over {config['days']} days ago")
         try:
             output_dir = config["output_directory"]
             if not os.path.isdir(output_dir):
-                print(f"Error: The directory {output_dir} does not exist")
+                print(f"Error: The output directory {output_dir} does not exist")
                 sys.exit(1)
         except KeyError:
-            print("Error: output_directory not found in config.json")
+            print("Error: output_directory not set in config.json")
             sys.exit(1)
-        pi, export_type = sys.argv[1:3]
-        if pi not in ["cosgrove", "davis", "esterlis"] or export_type not in [
-            "records",
-            "project",
-        ]:
-            print("Invalid arguments provided.")
-            exit(1)
 
-        set_token(pi)
-
+        # Set file extension depending on type specified
         file_ext = "csv" if export_type == "records" else "xml"
 
-        if export_type == "records":
-            api_call = records_data
-        elif export_type == "project":
-            api_call = project_data
-        else:
-            print(f"{export_type} is not an acceptable value")
-            exit(1)
-
+        # Set up API call by loading copy of config.json
+        # with the correct token written into the token
+        # field under export type
+        api_call = config["export"][export_type].copy()
+        api_call["token"] = token_map[pi]
         try:
-            r = requests.post(
-                "https://poa-redcap.med.yale.edu/api/", data=api_call
-            )
+            redcap_url = config["redcap_url"]
+            r = requests.post(redcap_url, data=api_call)
             print("HTTP Status: " + str(r.status_code))
             records = r.text
         except Exception as e:
             print(f"Error occurred: {e}")
-            exit(1)
-
+            sys.exit(1)
         file_org(pi, export_type, file_ext, records, output_dir)
     else:
-        print(f"{config['days']} days have not passed you idiot.")
+        sys.exit(0)
 
 
 if __name__ == "__main__":
